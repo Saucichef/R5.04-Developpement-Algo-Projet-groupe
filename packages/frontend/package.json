@@ -17,6 +17,12 @@
         "react-scripts": "^5.0.1",
         "web-vitals": "^5.1.0"
     },
+    "devDependencies": {
+        "@types/node": "^26.5.0",
+        "@types/react": "...",
+        "@types/react-dom": "...",
+        "typescript": "^7.0.2"
+    },
     "browserslist": {
         "production": [
             ">0.2%",
