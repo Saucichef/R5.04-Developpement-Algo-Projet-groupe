@@ -80,7 +80,7 @@ const Login = ({ onLogin }) => {
         textAlign: 'center',
         marginTop: '20px',
       }}>
-        Don't have an account? <Link to="/register">Register</Link>
+        Don&apos;t have an account? <Link to="/register">Register</Link>
       </p>
     </div>
   );
