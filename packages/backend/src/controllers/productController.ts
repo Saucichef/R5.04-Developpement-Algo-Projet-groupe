@@ -1,20 +1,23 @@
+import { Request, Response } from "express";
+import { Product } from '../types/Product';
+
 const db = require('../db/database');
 
-exports.getAllProducts = (req, res) => {
+export const getAllProducts = (_: Request, res: Response) => {
     const database = db.getDb();
 
-    database.all('SELECT * FROM products', [], async function (error, products) {
+    database.all('SELECT * FROM products', [], async function (error: Error | null, products: Array<Product>) {
         if (error) {
             res.status(400).json({"error": error.message});
             return;
         }
 
-        const productsWithDetails = [];
+        const productsWithDetails: Array<Product> = [];
 
         for (let i = 0; i < products.length; i++) {
             const product = products[i];
 
-            await new Promise((resolve) => {
+            await new Promise<void>((resolve) => {
                 database.get(
                     'SELECT COUNT(*) as total FROM products WHERE price <= ?',
                     [product.price],
@@ -27,7 +30,7 @@ exports.getAllProducts = (req, res) => {
                 );
             });
 
-            await new Promise((resolve) => {
+            await new Promise<void>((resolve) => {
                 database.get(
                     'SELECT AVG(price) as avg FROM products',
                     [],
@@ -50,7 +53,7 @@ exports.getAllProducts = (req, res) => {
     });
 };
 
-exports.createProduct = (req, res) => {
+export const createProduct = (req, res) => {
     const {name, price, stock} = req.body;
     const database = db.getDb();
 
@@ -72,7 +75,7 @@ exports.createProduct = (req, res) => {
     );
 };
 
-exports.getProduct = (req, res) => {
+export const getProduct = (req, res) => {
     const id = req.params.id;
     const database = db.getDb();
 
@@ -92,7 +95,7 @@ exports.getProduct = (req, res) => {
     );
 };
 
-exports.updateStock = (req, res) => {
+export const updateStock = (req, res) => {
     const { id } = req.params;
     const { stock } = req.body;
     const database = db.getDb();

@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "workspaces": [
-      "packages/*"
+        "packages/*"
     ],
     "scripts": {
         "start": "npm run build --workspace=backend && concurrently \"npm run start --workspace=backend\" \"npm run start --workspace=frontend\"",
@@ -13,6 +13,9 @@
         "lint": "npm run lint --workspaces --if-present"
     },
     "devDependencies": {
-      "concurrently": "^8.2.2"
+        "concurrently": "^8.2.2"
+    },
+    "dependencies": {
+        "@types/jsonwebtoken": "^9.0.10"
     }
 }

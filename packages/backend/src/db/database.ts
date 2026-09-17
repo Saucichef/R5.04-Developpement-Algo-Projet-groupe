@@ -1,14 +1,16 @@
+import { Database } from "sqlite3";
+import path from 'path';
+
 const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
 const initDatabase = require('./migrations/init');
 
-let db = null;
+let database: Database | null = null;
 
 const DB_PATH = path.join(__dirname, '..', 'database.sqlite');
 
 const connect = async () => {
-  if (db) {
-    return db;
+  if (database) {
+    return database;
   }
 
   return new Promise((resolve, reject) => {
@@ -23,7 +25,7 @@ const connect = async () => {
         console.log('Files in db directory:', files.length);
       }
 
-      db = new sqlite3.Database(DB_PATH, async (err) => {
+      database = new sqlite3.Database(DB_PATH, async (err: Error) => {
         if (err) {
           console.error('Error connecting to database:', err);
           reject(err);
@@ -33,9 +35,9 @@ const connect = async () => {
         console.log('Connected to SQLite database');
 
         try {
-          await initDatabase(db);
+          await initDatabase(database);
           console.log('Database initialized');
-          resolve(db);
+          resolve(database);
         } catch (initErr) {
           console.error('Error initializing database:', initErr);
           reject(initErr);
@@ -51,33 +53,36 @@ const connect = async () => {
 
 // Get database instance - throws error if not connected
 const getDb = () => {
-  if (!db) {
+  if (!database) {
     throw new Error('Database not connected. Call connect() first.');
   }
-  return db;
+  return database;
 };
 
 const closeConnection = () => {
-  return new Promise((resolve, reject) => {
-    if (!db) {
+  return new Promise<void>((resolve, reject) => {
+    if (!database) {
       resolve();
       return;
     }
 
-    db.close((err) => {
+    database.close((err) => {
       if (err) {
         console.error('Error closing database:', err);
         reject(err);
         return;
       }
-      db = null;
+      database = null;
       resolve();
     });
   });
 };
 
-module.exports = {
+
+const db = {
   connect,
   getDb,
   closeConnection,
 };
+
+export default db;

@@ -1,8 +1,11 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const db = require('../db/database');
+import bcrypt from 'bcryptjs';
+import { Request, Response } from 'express';
+import db from '../db/database';
+import { User } from '../types/User';
 
-exports.registerUser = (req, res) => {
+const jwt = require('jsonwebtoken');
+
+export const registerUser = (req: Request<User>, res: Response) => {
     const { username, password, firstname, lastname } = req.body;
 
     const hashedPassword = bcrypt.hashSync(password, 8);
@@ -29,7 +32,7 @@ exports.registerUser = (req, res) => {
     );
 };
 
-exports.loginUser = (req, res) => {
+export const loginUser = (req: Request<User>, res: Response) => {
     const { username, password } = req.body;
 
     const database = db.getDb();
@@ -37,7 +40,7 @@ exports.loginUser = (req, res) => {
     database.get(
         `SELECT * FROM users WHERE username = ?`,
         [username],
-        (err, user) => {
+        (err, user: User) => {
             if (err) return res.status(500).json({ error: 'Error on the server.' });
             if (!user) return res.status(404).json({ error: 'No user found.' });
 
@@ -64,13 +67,13 @@ exports.loginUser = (req, res) => {
     );
 };
 
-exports.getAllUsers = (req, res) => {
+export const getAllUsers = (_: Request<User>, res: Response) => {
     const database = db.getDb();
 
     database.all(
         `SELECT id, username, firstname, lastname, created_at FROM users`,
         [],
-        (err, users) => {
+        (err, users: Array<User>) => {
             if (err) {
                 console.error(err);
                 return res.status(500).json({ error: 'Error getting users' });
@@ -80,20 +83,20 @@ exports.getAllUsers = (req, res) => {
     );
 };
 
-exports.findSimilarUsernames = (req, res) => {
+export const findSimilarUsernames = (_req: Request, res: Response) => {
     const database = db.getDb();
 
-    database.all('SELECT username FROM users', [], (err, users) => {
+    database.all('SELECT username FROM users', [], (err, users: Array<User>) => {
         if (err) return res.status(500).json({ error: err.message });
 
-        const similar = [];
+        const similar: Array<any> = [];
 
         for (let i = 0; i < users.length; i++) {
             for (let j = i + 1; j < users.length; j++) {
                 const username1 = users[i].username.toLowerCase();
                 const username2 = users[j].username.toLowerCase();
 
-                const matrix = [];
+                const matrix: Array<Array<number>> = [];
                 for (let x = 0; x <= username1.length; x++) {
                     matrix[x] = [x];
                 }

@@ -1,5 +1,14 @@
-const initDatabase = (db) => {
-  return new Promise((resolve, reject) => {
+import { Database } from "sqlite3";
+
+interface CountResult {
+  /**
+   * Nombre de résultats.
+   */
+  count: number;
+};
+
+const initDatabase = (db: Database) => {
+  return new Promise<void>((resolve, reject) => {
     db.serialize(() => {
       // Create Users table
       db.run(`
@@ -12,7 +21,7 @@ const initDatabase = (db) => {
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           updated_at DATETIME
         )
-      `, (err) => {
+      `, (err: Error) => {
         if (err) {
           console.error('Error creating users table:', err);
           reject(err);
@@ -29,7 +38,7 @@ const initDatabase = (db) => {
           created_at DATETIME DEFAULT (datetime('now')),
           updated_at DATETIME
         )
-      `, (err) => {
+      `, (err: Error) => {
         if (err) {
           console.error('Error creating products table:', err);
           reject(err);
@@ -37,7 +46,7 @@ const initDatabase = (db) => {
       });
 
       // Add sample data if tables are empty
-      db.get('SELECT COUNT(*) as count FROM users', [], (err, result) => {
+      db.get('SELECT COUNT(*) as count FROM users', [], (err: Error, result: CountResult) => {
         if (err) {
           console.error('Error checking users:', err);
           reject(err);
@@ -62,7 +71,7 @@ const initDatabase = (db) => {
         }
       });
 
-      db.get('SELECT COUNT(*) as count FROM products', [], (err, result) => {
+      db.get('SELECT COUNT(*) as count FROM products', [], (err: Error, result: CountResult) => {
         if (err) {
           console.error('Error checking products:', err);
           reject(err);
@@ -80,7 +89,7 @@ const initDatabase = (db) => {
             db.run(
                 'INSERT INTO products (name, price, stock) VALUES (?, ?, ?)',
                 [name, price, stock],
-                (err) => {
+                (err: Error) => {
                   if (err) console.error('Error inserting product:', name, err);
                 }
             );

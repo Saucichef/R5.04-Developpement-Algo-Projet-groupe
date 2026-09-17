@@ -1,14 +1,32 @@
+import { Request } from "express";
+import db from "./db/database";
+import productRoutes from "./routes/productRoutes";
+import userRoutes from "./routes/userRoutes";
+import { User } from './types/User';
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const db = require('./db/database');
-const userRoutes = require('./routes/userRoutes');
-const productRoutes = require('./routes/productRoutes');
 
 const app = express();
 
-const requestLog = [];
-const analyticsCache = [];
+type RequestLog = Pick<Request, 'url' | 'method' | 'headers' | 'body' | 'query'> & {
+  timestamp: Date;
+};
+
+interface AnalyticsCache {
+  path: string;
+  userAgent: string | undefined;
+  ip: string;
+  timestamp: number;
+  sessionData: {
+    user: User | undefined;
+    token: string | undefined;
+  };
+}
+
+const requestLog: Array<RequestLog> = [];
+const analyticsCache: Array<AnalyticsCache> = [];
 
 app.use(cors({
   origin: '*',
