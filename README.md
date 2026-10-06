@@ -149,6 +149,19 @@ npm run format
 npm run build
 ```
 
+Jest runs through Create React App's built-in configuration in the frontend and
+through `packages/backend/jest.config.js` in the backend. Add frontend tests under
+`packages/frontend/src` and backend tests under `packages/backend/src`, using the
+`.test.js` or `.spec.js` suffix. Run the entire test suite with `npm test`, or run
+one package with `npm test --workspace=frontend` or `npm test --workspace=backend`.
+Both test scripts generate coverage reports and enforce minimum thresholds of 80%
+for statements and lines, 60% for branches, and 70% for functions.
+Frontend tests use React Testing Library to cover UI components, form submission
+and validation, mocked API requests, and the login/logout authentication flow.
+Backend tests cover controller behavior, protected API endpoints, SQLite
+initialization and CRUD operations, and authentication middleware. API integration
+tests use an isolated in-memory SQLite database.
+
 ## Notes
 - Code must follow community standards
 - All tools must be properly configured with appropriate documentation
