@@ -8,6 +8,8 @@ let database: Database | null = null;
 
 const DB_PATH = path.join(__dirname, '..', 'database.sqlite');
 
+const fs = require('fs');
+
 const connect = async () => {
   if (database) {
     return database;
@@ -15,8 +17,6 @@ const connect = async () => {
 
   return new Promise((resolve, reject) => {
     try {
-      const fs = require('fs');
-
       if (fs.existsSync(DB_PATH)) {
         const stats = fs.statSync(DB_PATH);
         console.log('Database file size:', stats.size, 'bytes');

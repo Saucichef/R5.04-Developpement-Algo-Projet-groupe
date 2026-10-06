@@ -1,0 +1,19 @@
+# Dépendances
+node_modules
+
+# Builds
+build
+dist
+.next
+
+# Coverage de tests
+coverage
+
+# Fichiers générés
+package-lock.json
+yarn.lock
+
+# Autres
+.env
+*.log
+public

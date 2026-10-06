@@ -30,14 +30,6 @@ function App() {
         setIsAuthenticated(!!localStorage.getItem('token'));
     }, []);
 
-    const routes = [
-        { path: '/login', element: <Login /> },
-        { path: '/register', element: <Register /> },
-        { path: '/users', element: <UserList /> },
-        { path: '/products', element: <ProductList /> },
-        { path: '/add-product', element: <AddProduct /> }
-    ];
-
     return (
         <BrowserRouter>
             <div className="app-container" style={{

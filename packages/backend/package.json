@@ -6,20 +6,27 @@
       "start": "node dist/server.js",
       "dev": "tsx watch src/server.ts",
       "build": "tsc",
-      "test": "echo \"No tests specified\" && exit 0",
-      "lint": "echo \"No lint specified\" && exit 0"
+        "test": "echo \"No tests specified\" && exit 0",
+        "lint": "eslint \"src/**/*.js\"",
+        "format": "prettier --write \"src/**/*.js\""
     },
     "dependencies": {
-      "express": "^5.1.0",
-      "sqlite3": "^5.1.7",
-      "cors": "^2.8.5",
-      "jsonwebtoken": "^9.0.2",
-      "bcryptjs": "^3.0.2",
-      "body-parser": "^2.2.0"
+        "bcryptjs": "^3.0.2",
+        "body-parser": "^2.2.0",
+        "cors": "^2.8.5",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "sqlite3": "^5.1.7"
     },
     "devDependencies": {
       "@types/express": "^4.17.25",
       "@types/node": "^26.5.0",
+        "eslint": "^10.10.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-n": "^18.3.0",
+        "eslint-plugin-perfectionist": "^5.11.0",
+        "eslint-plugin-unicorn": "^74.0.0",
+        "prettier": "^3.9.6"
       "tsx": "^4.23.13",
       "typescript": "^7.0.2"
     }
