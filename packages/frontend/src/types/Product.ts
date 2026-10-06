@@ -1,5 +1,17 @@
 export interface Product {
   /**
+   * Statut du stock
+   */
+  stockStatus: string;
+  /**
+   * Prix de la catégorie
+   */
+  priceCategory: string;
+  /**
+   * Texte de recherche
+   */
+  searchableText: any;
+  /**
    * Identifiant unique du produit.
    */
   id: number;
@@ -10,7 +22,7 @@ export interface Product {
   /**
    * Prix du produit.
    */
-  price: number;
+  price: string;
   /**
    * Nombre de produits en stock.
    */

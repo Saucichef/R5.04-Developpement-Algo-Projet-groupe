@@ -1,5 +1,5 @@
-import { createProduct, getAllProducts, getProduct, updateStock } from "../controllers/productController";
-import { auth } from "../middleware/auth";
+import { createProduct, getAllProducts, getProduct, updateStock } from '../controllers/productController';
+import { auth } from '../middleware/auth';
 
 const express = require('express');
 const router = express.Router();

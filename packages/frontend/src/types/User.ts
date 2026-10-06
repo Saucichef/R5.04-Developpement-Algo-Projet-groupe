@@ -1,5 +1,9 @@
 export interface User {
   /**
+   * Catégorie rejoint
+   */
+  joinedCategory: string;
+  /**
    * Identifiant unique de l'utilisateur.
    */
   id: number;
