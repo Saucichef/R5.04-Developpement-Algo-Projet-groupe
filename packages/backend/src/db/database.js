@@ -8,22 +8,22 @@ const DB_PATH = path.join(__dirname, '..', 'database.sqlite');
 
 const fs = require('fs');
 
-const connect = async () => {
+const connect = async (databasePath = DB_PATH) => {
   if (db) {
     return db;
   }
 
   return new Promise((resolve, reject) => {
     try {
-      if (fs.existsSync(DB_PATH)) {
-        const stats = fs.statSync(DB_PATH);
+      if (databasePath !== ':memory:' && fs.existsSync(databasePath)) {
+        const stats = fs.statSync(databasePath);
         console.log('Database file size:', stats.size, 'bytes');
 
         const files = fs.readdirSync(__dirname);
         console.log('Files in db directory:', files.length);
       }
 
-      db = new sqlite3.Database(DB_PATH, async (err) => {
+      db = new sqlite3.Database(databasePath, async (err) => {
         if (err) {
           console.error('Error connecting to database:', err);
           reject(err);
@@ -41,7 +41,6 @@ const connect = async () => {
           reject(initErr);
         }
       });
-
     } catch (err) {
       console.error('Failed to create database connection:', err);
       reject(err);
@@ -79,5 +78,5 @@ const closeConnection = () => {
 module.exports = {
   connect,
   getDb,
-  closeConnection,
+  closeConnection
 };
