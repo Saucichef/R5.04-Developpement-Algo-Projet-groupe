@@ -7,8 +7,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "test": "echo \"No tests specified\" && exit 0",
-    "lint": "eslint \"src/**/*.js\"",
-    "format": "prettier --write \"src/**/*.js\""
+    "lint": "eslint \"src/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

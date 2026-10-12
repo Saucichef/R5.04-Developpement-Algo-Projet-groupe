@@ -2,129 +2,110 @@ import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 import db from '../db/database';
 import { User } from '../types/User';
-
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 export const registerUser = (req: Request<User>, res: Response) => {
-    const { username, password, firstname, lastname } = req.body;
+  const { username, password, firstname, lastname } = req.body;
 
-    const hashedPassword = bcrypt.hashSync(password, 8);
+  const hashedPassword = bcrypt.hashSync(password, 8);
 
-    const database = db.getDb();
+  const database = db.getDb();
 
-    database.run(
-        `INSERT INTO users (username, password, firstname, lastname) VALUES (?, ?, ?, ?)`,
-        [username, hashedPassword, firstname, lastname],
-        function(err) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Error creating user' });
-            }
+  database.run(
+    `INSERT INTO users (username, password, firstname, lastname) VALUES (?, ?, ?, ?)`,
+    [username, hashedPassword, firstname, lastname],
+    function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Error creating user' });
+      }
 
-            const token = jwt.sign(
-                { id: this.lastID },
-                'your-super-secret-key-that-should-not-be-hardcoded',
-                { expiresIn: 86400 }
-            );
+      const token = jwt.sign({ id: this.lastID }, 'your-super-secret-key-that-should-not-be-hardcoded', {
+        expiresIn: 86400
+      });
 
-            res.status(201).json({ auth: true, token });
-        }
-    );
+      res.status(201).json({ auth: true, token });
+    }
+  );
 };
 
 export const loginUser = (req: Request<User>, res: Response) => {
-    const { username, password } = req.body;
+  const { username, password } = req.body;
 
-    const database = db.getDb();
+  const database = db.getDb();
 
-    database.get(
-        `SELECT * FROM users WHERE username = ?`,
-        [username],
-        (err, user: User) => {
-            if (err) return res.status(500).json({ error: 'Error on the server.' });
-            if (!user) return res.status(404).json({ error: 'No user found.' });
+  database.get(`SELECT * FROM users WHERE username = ?`, [username], (err, user: User) => {
+    if (err) return res.status(500).json({ error: 'Error on the server.' });
+    if (!user) return res.status(404).json({ error: 'No user found.' });
 
-            const passwordIsValid = bcrypt.compareSync(password, user.password);
-            if (!passwordIsValid) return res.status(401).json({ auth: false, token: null });
+    const passwordIsValid = bcrypt.compareSync(password, user.password);
+    if (!passwordIsValid) return res.status(401).json({ auth: false, token: null });
 
-            const token = jwt.sign(
-                { id: user.id },
-                'your-super-secret-key-that-should-not-be-hardcoded',
-                { expiresIn: 86400 }
-            );
+    const token = jwt.sign({ id: user.id }, 'your-super-secret-key-that-should-not-be-hardcoded', { expiresIn: 86400 });
 
-            res.status(200).json({
-                auth: true,
-                token,
-                user: {
-                    id: user.id,
-                    username: user.username,
-                    firstname: user.firstname,
-                    lastname: user.lastname
-                }
-            });
-        }
-    );
+    res.status(200).json({
+      auth: true,
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        firstname: user.firstname,
+        lastname: user.lastname
+      }
+    });
+  });
 };
 
 export const getAllUsers = (_: Request<User>, res: Response) => {
-    const database = db.getDb();
+  const database = db.getDb();
 
-    database.all(
-        `SELECT id, username, firstname, lastname, created_at FROM users`,
-        [],
-        (err, users: Array<User>) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Error getting users' });
-            }
-            res.json(users);
-        }
-    );
+  database.all(`SELECT id, username, firstname, lastname, created_at FROM users`, [], (err, users: Array<User>) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Error getting users' });
+    }
+    res.json(users);
+  });
 };
 
 export const findSimilarUsernames = (_req: Request, res: Response) => {
-    const database = db.getDb();
+  const database = db.getDb();
 
-    database.all('SELECT username FROM users', [], (err, users: Array<User>) => {
-        if (err) return res.status(500).json({ error: err.message });
+  database.all('SELECT username FROM users', [], (err, users: Array<User>) => {
+    if (err) return res.status(500).json({ error: err.message });
 
-        const similar: Array<any> = [];
+    const similar: Array<any> = [];
 
-        for (let i = 0; i < users.length; i++) {
-            for (let j = i + 1; j < users.length; j++) {
-                const username1 = users[i].username.toLowerCase();
-                const username2 = users[j].username.toLowerCase();
+    for (let i = 0; i < users.length; i++) {
+      for (let j = i + 1; j < users.length; j++) {
+        const username1 = users[i].username.toLowerCase();
+        const username2 = users[j].username.toLowerCase();
 
-                const matrix: Array<Array<number>> = [];
-                for (let x = 0; x <= username1.length; x++) {
-                    matrix[x] = [x];
-                }
-                for (let y = 0; y <= username2.length; y++) {
-                    matrix[0][y] = y;
-                }
-
-                for (let x = 1; x <= username1.length; x++) {
-                    for (let y = 1; y <= username2.length; y++) {
-                        if (username1.charAt(x - 1) === username2.charAt(y - 1)) {
-                            matrix[x][y] = matrix[x - 1][y - 1];
-                        } else {
-                            matrix[x][y] = Math.min(
-                                matrix[x - 1][y - 1] + 1,
-                                matrix[x][y - 1] + 1,
-                                matrix[x - 1][y] + 1
-                            );
-                        }
-                    }
-                }
-
-                const distance = matrix[username1.length][username2.length];
-                if (distance <= 2) {
-                    similar.push({ user1: users[i].username, user2: users[j].username, distance });
-                }
-            }
+        const matrix: Array<Array<number>> = [];
+        for (let x = 0; x <= username1.length; x++) {
+          matrix[x] = [x];
+        }
+        for (let y = 0; y <= username2.length; y++) {
+          matrix[0][y] = y;
         }
 
-        res.json({ similar, totalComparisons: (users.length * (users.length - 1)) / 2 });
-    });
+        for (let x = 1; x <= username1.length; x++) {
+          for (let y = 1; y <= username2.length; y++) {
+            if (username1.charAt(x - 1) === username2.charAt(y - 1)) {
+              matrix[x][y] = matrix[x - 1][y - 1];
+            } else {
+              matrix[x][y] = Math.min(matrix[x - 1][y - 1] + 1, matrix[x][y - 1] + 1, matrix[x - 1][y] + 1);
+            }
+          }
+        }
+
+        const distance = matrix[username1.length][username2.length];
+        if (distance <= 2) {
+          similar.push({ user1: users[i].username, user2: users[j].username, distance });
+        }
+      }
+    }
+
+    res.json({ similar, totalComparisons: (users.length * (users.length - 1)) / 2 });
+  });
 };
