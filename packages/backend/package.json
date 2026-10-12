@@ -1,29 +1,31 @@
 {
-    "name": "backend",
-    "version": "1.0.0",
-    "main": "src/server.js",
-    "scripts": {
-        "start": "node src/server.js",
-        "dev": "nodemon src/server.js",
-        "test": "echo \"No tests specified\" && exit 0",
-        "lint": "eslint \"src/**/*.js\"",
-        "format": "prettier --write \"src/**/*.js\""
-    },
-    "dependencies": {
-        "bcryptjs": "^3.0.2",
-        "body-parser": "^2.2.0",
-        "cors": "^2.8.5",
-        "express": "^5.1.0",
-        "jsonwebtoken": "^9.0.2",
-        "sqlite3": "^5.1.7"
-    },
-    "devDependencies": {
-        "eslint": "^10.10.0",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-n": "^18.3.0",
-        "eslint-plugin-perfectionist": "^5.11.0",
-        "eslint-plugin-unicorn": "^74.0.0",
-        "nodemon": "^3.1.10",
-        "prettier": "^3.9.6"
-    }
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest --config jest.config.js --coverage --passWithNoTests --watchAll=false",
+    "lint": "eslint \"src/**/*.js\"",
+    "format": "prettier --write \"src/**/*.js\""
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-n": "^18.3.0",
+    "eslint-plugin-perfectionist": "^5.11.0",
+    "eslint-plugin-unicorn": "^74.0.0",
+    "jest": "^30.5.2",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.9.6",
+    "supertest": "^7.3.1"
+  }
 }

@@ -42,5 +42,21 @@ module.exports = [
       'perfectionist/sort-objects': 'warn'
     }
   },
+  {
+    files: ['**/*.test.js', '**/*.spec.js'],
+    languageOptions: {
+      globals: {
+        afterAll: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        beforeEach: 'readonly',
+        describe: 'readonly',
+        expect: 'readonly',
+        it: 'readonly',
+        jest: 'readonly',
+        test: 'readonly'
+      }
+    }
+  },
   eslintConfigPrettier
 ];
