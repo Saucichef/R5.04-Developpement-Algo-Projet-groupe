@@ -3,10 +3,10 @@ import db from "./db/database";
 import productRoutes from "./routes/productRoutes";
 import userRoutes from "./routes/userRoutes";
 import { User } from './types/User';
+import express from 'express';
+import bodyParser from 'body-parser';
 
-const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 
 const app = express();
 
@@ -37,7 +37,7 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
+app.use((err, req, res, next) => {
   requestLog.push({
     url: req.url,
     method: req.method,
@@ -65,7 +65,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', userRoutes);
 app.use('/api', productRoutes);
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
