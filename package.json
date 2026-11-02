@@ -11,7 +11,9 @@
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "prepare": "husky",
-    "test:coverage": "npm run test:coverage --workspaces --if-present"
+    "test:coverage": "npm run test:coverage --workspaces --if-present",
+    "format": "npm run format --workspaces --if-present",
+    "build": "npm run build --workspace=frontend"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
@@ -22,14 +24,14 @@
   },
   "lint-staged": {
     "packages/frontend/**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write",
-      "jest --findRelatedTests --passWithNoTests"
+      "npm exec --workspace=frontend -- eslint --fix",
+      "npm exec --workspace=frontend -- prettier --write",
+      "npm exec --workspace=frontend -- react-scripts test --watchAll=false --findRelatedTests --passWithNoTests"
     ],
     "packages/backend/**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write",
-      "jest --findRelatedTests --passWithNoTests"
+      "npm exec --workspace=backend -- eslint --fix",
+      "npm exec --workspace=backend -- prettier --write",
+      "npm exec --workspace=backend -- jest --config jest.config.js --findRelatedTests --passWithNoTests"
     ],
     "**/*.{json,md}": [
       "prettier --write"

@@ -4,7 +4,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --coverage --passWithNoTests --watchAll=false",
+    "test": "react-scripts test --passWithNoTests --watchAll=false",
+    "test:coverage": "react-scripts test --coverage --passWithNoTests --watchAll=false",
     "lint": "eslint \"src/**/*.{js,jsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx}\""
   },
