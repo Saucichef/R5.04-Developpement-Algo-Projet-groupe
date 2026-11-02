@@ -1,88 +1,5 @@
-import { Request } from "express";
-import db from "./db/database";
-import productRoutes from "./routes/productRoutes";
-import userRoutes from "./routes/userRoutes";
-import { User } from './types/User';
-import express from 'express';
-import bodyParser from 'body-parser';
-
-const cors = require('cors');
-
-const app = express();
-
-type RequestLog = Pick<Request, 'url' | 'method' | 'headers' | 'body' | 'query'> & {
-  timestamp: Date;
-};
-
-interface AnalyticsCache {
-  path: string;
-  userAgent: string | undefined;
-  ip: string;
-  timestamp: number;
-  sessionData: {
-    user: User | undefined;
-    token: string | undefined;
-  };
-}
-
-const requestLog: Array<RequestLog> = [];
-const analyticsCache: Array<AnalyticsCache> = [];
-
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use((err, req, res, next) => {
-  requestLog.push({
-    url: req.url,
-    method: req.method,
-    timestamp: new Date(),
-    headers: JSON.parse(JSON.stringify(req.headers)),
-    body: JSON.parse(JSON.stringify(req.body || {})),
-    query: JSON.parse(JSON.stringify(req.query || {}))
-  });
-
-  analyticsCache.push({
-    path: req.path,
-    userAgent: req.headers['user-agent'],
-    ip: req.ip,
-    timestamp: Date.now(),
-    sessionData: {
-      user: req.user,
-      token: req.headers.authorization
-    }
-  });
-
-  next();
-});
-
-// Routes setup
-app.use('/api/auth', userRoutes);
-app.use('/api', productRoutes);
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
-
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
-
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled Rejection:', err);
-  process.exit(1);
-});
+import app from './app';
+const db = require('./db/database');
 
 const port = process.env.PORT || 3001;
 
@@ -104,17 +21,28 @@ const startServer = async () => {
       console.info('SIGTERM signal received.');
       server.close(() => {
         db.closeConnection()
-            .then(() => process.exit(0))
-            .catch(() => process.exit(1));
+          .then(() => process.exit(0))
+          .catch(() => process.exit(1));
       });
     });
-
   } catch (err) {
     console.error('Failed to start server:', err);
     process.exit(1);
   }
 };
 
-startServer();
+if (require.main === module) {
+  process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+    process.exit(1);
+  });
+
+  process.on('unhandledRejection', (err) => {
+    console.error('Unhandled Rejection:', err);
+    process.exit(1);
+  });
+
+  startServer();
+}
 
 module.exports = app;

@@ -5,8 +5,8 @@ const API_URL = 'http://localhost:3001/api';
 export const loginUser = async (username, password) => {
   try {
     const response = await axios.post(`${API_URL}/auth/login`, {
-      username,
-      password
+      password,
+      username
     });
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -24,9 +24,11 @@ export const registerUser = async (userData) => {
 
 export async function getUsers() {
   const token = localStorage.getItem('token');
-  return axios.get(`${API_URL}/auth/users`, {
-    headers: { Authorization: `Bearer ${token}` }
-  }).then(response => response.data);
+  return axios
+    .get(`${API_URL}/auth/users`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then((response) => response.data);
 }
 
 export const getProducts = async () => {

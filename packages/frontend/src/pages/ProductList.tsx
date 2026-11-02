@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+
 import { getProducts } from '../services/api';
 import { Product } from '../types/Product';
 
@@ -16,8 +17,8 @@ const ProductList = () => {
         const data = await getProducts();
         const processedData = data.map((item) => ({
           ...item,
-          searchableText: `${item.name.toLowerCase()} ${item.price} ${item.stock}`,
           priceCategory: item.price < 50 ? 'cheap' : item.price < 100 ? 'medium' : 'expensive',
+          searchableText: `${item.name.toLowerCase()} ${item.price} ${item.stock}`,
           stockStatus: item.stock === 0 ? 'out' : item.stock < 10 ? 'low' : 'available'
         }));
         setProducts(processedData);
@@ -107,9 +108,9 @@ const ProductList = () => {
     <div style={{ padding: '20px' }}>
       <div
         style={{
+          alignItems: 'center',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center',
           marginBottom: '20px'
         }}
       >
@@ -117,12 +118,12 @@ const ProductList = () => {
         <Link to="/add-product">
           <button
             style={{
-              padding: '10px 20px',
               backgroundColor: '#4CAF50',
-              color: 'white',
               border: 'none',
               borderRadius: '4px',
-              cursor: 'pointer'
+              color: 'white',
+              cursor: 'pointer',
+              padding: '10px 20px'
             }}
           >
             Add Product
@@ -143,10 +144,10 @@ const ProductList = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{
-            padding: '8px',
-            borderRadius: '4px',
             border: '1px solid #ddd',
-            flex: 1
+            borderRadius: '4px',
+            flex: 1,
+            padding: '8px'
           }}
         />
 
@@ -154,9 +155,9 @@ const ProductList = () => {
           value={priceFilter}
           onChange={(e) => setPriceFilter(e.target.value)}
           style={{
-            padding: '8px',
+            border: '1px solid #ddd',
             borderRadius: '4px',
-            border: '1px solid #ddd'
+            padding: '8px'
           }}
         >
           <option value="">All Prices</option>
@@ -169,9 +170,9 @@ const ProductList = () => {
           value={stockFilter}
           onChange={(e) => setStockFilter(e.target.value)}
           style={{
-            padding: '8px',
+            border: '1px solid #ddd',
             borderRadius: '4px',
-            border: '1px solid #ddd'
+            padding: '8px'
           }}
         >
           <option value="">All Stock</option>
@@ -184,11 +185,11 @@ const ProductList = () => {
       {error && (
         <div
           style={{
-            color: 'red',
-            padding: '10px',
             backgroundColor: '#ffebee',
+            borderRadius: '4px',
+            color: 'red',
             marginBottom: '20px',
-            borderRadius: '4px'
+            padding: '10px'
           }}
         >
           {error}
@@ -198,26 +199,26 @@ const ProductList = () => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-          gap: '20px'
+          gap: '20px',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))'
         }}
       >
         {filteredProducts.map((product) => (
           <div
             key={product.id}
             style={{
+              backgroundColor: 'white',
               border: '1px solid #ddd',
               borderRadius: '8px',
-              padding: '15px',
-              backgroundColor: 'white'
+              padding: '15px'
             }}
           >
             <h3 style={{ margin: '0 0 10px 0' }}>{product.name}</h3>
-            <p style={{ margin: '5px 0', color: '#666' }}>Price: ${product.price}</p>
+            <p style={{ color: '#666', margin: '5px 0' }}>Price: ${product.price}</p>
             <p
               style={{
-                margin: '5px 0',
-                color: product.stock > 0 ? '#4CAF50' : '#f44336'
+                color: product.stock > 0 ? '#4CAF50' : '#f44336',
+                margin: '5px 0'
               }}
             >
               Stock: {product.stock}
@@ -227,7 +228,7 @@ const ProductList = () => {
       </div>
 
       {filteredProducts.length === 0 && (
-        <p style={{ textAlign: 'center', color: '#666' }}>No products found matching your criteria</p>
+        <p style={{ color: '#666', textAlign: 'center' }}>No products found matching your criteria</p>
       )}
     </div>
   );

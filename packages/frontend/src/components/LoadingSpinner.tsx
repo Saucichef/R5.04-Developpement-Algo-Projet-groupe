@@ -4,21 +4,21 @@ const LoadingSpinner = () => {
   return (
     <div
       style={{
-        display: 'flex',
-        justifyContent: 'center',
         alignItems: 'center',
+        display: 'flex',
         height: '100%',
+        justifyContent: 'center',
         width: '100%'
       }}
     >
       <div
         style={{
-          width: '50px',
-          height: '50px',
+          animation: 'spin 1s linear infinite',
           border: '5px solid #f3f3f3',
-          borderTop: '5px solid #3498db',
           borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
+          borderTop: '5px solid #3498db',
+          height: '50px',
+          width: '50px'
         }}
       ></div>
       <style>{`

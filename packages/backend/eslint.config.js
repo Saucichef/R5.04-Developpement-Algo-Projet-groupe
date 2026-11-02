@@ -1,26 +1,37 @@
 const js = require('@eslint/js');
+const tsParser = require('@typescript-eslint/parser');
 const perfectionist = require('eslint-plugin-perfectionist');
 const n = require('eslint-plugin-n');
 const unicorn = require('eslint-plugin-unicorn');
 const eslintConfigPrettier = require('eslint-config-prettier');
+const globals = require('globals');
 
 module.exports = [
   {
     ignores: ['node_modules/**', 'coverage/**', 'dist/**']
   },
+
   js.configs.recommended,
+
+  {
+    files: ['**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      globals: {
+        ...require('globals').node,
+        ...require('globals').jest
+      }
+    }
+  },
+
   {
     files: ['**/*.ts'],
     languageOptions: {
+      parser: tsParser,
       ecmaVersion: 'latest',
-      sourceType: 'commonjs',
+      sourceType: 'module',
       globals: {
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        module: 'readonly',
-        require: 'readonly',
-        process: 'readonly',
-        console: 'readonly'
+        ...globals.node
       }
     },
     plugins: {
@@ -29,6 +40,8 @@ module.exports = [
       unicorn
     },
     rules: {
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
       'no-console': 'off',
       'n/no-process-exit': 'off',
       'n/no-unpublished-require': 'off',
@@ -42,5 +55,16 @@ module.exports = [
       'perfectionist/sort-objects': 'warn'
     }
   },
+
+  {
+    files: ['**/*.test.js', '**/*.spec.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.jest
+      }
+    }
+  },
+
   eslintConfigPrettier
 ];

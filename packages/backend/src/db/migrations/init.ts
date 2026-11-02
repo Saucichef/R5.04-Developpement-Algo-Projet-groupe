@@ -1,105 +1,81 @@
-import { Database } from "sqlite3";
+import bcrypt from 'bcryptjs';
 
-interface CountResult {
-  /**
-   * Nombre de résultats.
-   */
-  count: number;
-};
+const run = (db, sql, params = []) =>
+  new Promise((resolve, reject) => {
+    db.run(sql, params, function (error) {
+      if (error) {
+        reject(error);
+        return;
+      }
 
-const initDatabase = (db: Database) => {
-  return new Promise<void>((resolve, reject) => {
-    db.serialize(() => {
-      // Create Users table
-      db.run(`
-        CREATE TABLE IF NOT EXISTS users (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          firstname TEXT,
-          lastname TEXT,
-          username TEXT UNIQUE,
-          password TEXT,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          updated_at DATETIME
-        )
-      `, (err: Error) => {
-        if (err) {
-          console.error('Error creating users table:', err);
-          reject(err);
-        }
-      });
-
-      // Create Products table
-      db.run(`
-        CREATE TABLE IF NOT EXISTS products (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL,
-          price REAL DEFAULT 0,
-          stock INTEGER DEFAULT 0,
-          created_at DATETIME DEFAULT (datetime('now')),
-          updated_at DATETIME
-        )
-      `, (err: Error) => {
-        if (err) {
-          console.error('Error creating products table:', err);
-          reject(err);
-        }
-      });
-
-      // Add sample data if tables are empty
-      db.get('SELECT COUNT(*) as count FROM users', [], (err: Error, result: CountResult) => {
-        if (err) {
-          console.error('Error checking users:', err);
-          reject(err);
-          return;
-        }
-
-        if (result.count === 0) {
-          const bcrypt = require('bcryptjs');
-          const hashedPassword = bcrypt.hashSync('admin123', 8);
-
-          db.run(`
-            INSERT INTO users (firstname, lastname, username, password)
-            VALUES (?, ?, ?, ?)
-          `,
-              ['Admin', 'User', 'admin', hashedPassword],
-              (err) => {
-                if (err) {
-                  console.error('Error creating admin user:', err);
-                  reject(err);
-                }
-              });
-        }
-      });
-
-      db.get('SELECT COUNT(*) as count FROM products', [], (err: Error, result: CountResult) => {
-        if (err) {
-          console.error('Error checking products:', err);
-          reject(err);
-          return;
-        }
-
-        if (result.count === 0) {
-          const sampleProducts = [
-            ['Laptop', 999.99, 10],
-            ['Smartphone', 499.99, 15],
-            ['Headphones', 79.99, 20]
-          ];
-
-          sampleProducts.forEach(([name, price, stock]) => {
-            db.run(
-                'INSERT INTO products (name, price, stock) VALUES (?, ?, ?)',
-                [name, price, stock],
-                (err: Error) => {
-                  if (err) console.error('Error inserting product:', name, err);
-                }
-            );
-          });
-        }
-      });
-
-      resolve();
+      resolve({ changes: this.changes, lastID: this.lastID });
     });
   });
+
+const get = (db, sql, params = []) =>
+  new Promise((resolve, reject) => {
+    db.get(sql, params, (error, result) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve(result);
+    });
+  });
+
+const initDatabase = async (db) => {
+  await run(
+    db,
+    `CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      firstname TEXT,
+      lastname TEXT,
+      username TEXT UNIQUE,
+      password TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME
+    )`
+  );
+
+  await run(
+    db,
+    `CREATE TABLE IF NOT EXISTS products (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      price REAL DEFAULT 0,
+      stock INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT (datetime('now')),
+      updated_at DATETIME
+    )`
+  );
+
+  const users = (await get(db, 'SELECT COUNT(*) AS count FROM users')) as any;
+
+  if (users.count === 0) {
+    const hashedPassword = bcrypt.hashSync('admin123', 8);
+
+    await run(
+      db,
+      `INSERT INTO users (firstname, lastname, username, password)
+       VALUES (?, ?, ?, ?)`,
+      ['Admin', 'User', 'admin', hashedPassword]
+    );
+  }
+
+  const products = (await get(db, 'SELECT COUNT(*) AS count FROM products')) as any;
+
+  if (products.count === 0) {
+    const sampleProducts = [
+      ['Laptop', 999.99, 10],
+      ['Smartphone', 499.99, 15],
+      ['Headphones', 79.99, 20]
+    ];
+
+    for (const product of sampleProducts) {
+      await run(db, 'INSERT INTO products (name, price, stock) VALUES (?, ?, ?)', product);
+    }
+  }
 };
 
 module.exports = initDatabase;

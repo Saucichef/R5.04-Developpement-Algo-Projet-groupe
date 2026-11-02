@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+
 import { getUsers } from '../services/api';
 import { User } from '../types/User';
 
@@ -16,8 +17,8 @@ const UserList = () => {
         const data = await getUsers();
         const processedUsers = data.map((user) => ({
           ...user,
-          searchableText: `${user.firstname.toLowerCase()} ${user.lastname.toLowerCase()} ${user.username.toLowerCase()}`,
-          joinedDate: new Date(user.created_at),
+          fullName: `${user.firstname} ${user.lastname}`,
+          initials: `${user.firstname.charAt(0)}${user.lastname.charAt(0)}`,
           joinedCategory: (() => {
             const created = new Date(user.created_at);
             const now = new Date();
@@ -25,8 +26,8 @@ const UserList = () => {
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             return diffDays < 7 ? 'new' : diffDays < 30 ? 'recent' : 'old';
           })(),
-          fullName: `${user.firstname} ${user.lastname}`,
-          initials: `${user.firstname.charAt(0)}${user.lastname.charAt(0)}`
+          joinedDate: new Date(user.created_at),
+          searchableText: `${user.firstname.toLowerCase()} ${user.lastname.toLowerCase()} ${user.username.toLowerCase()}`
         }));
         setUsers(processedUsers);
       } catch (err) {
@@ -171,10 +172,10 @@ const UserList = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{
-            padding: '8px',
-            borderRadius: '4px',
             border: '1px solid #ddd',
-            flex: 1
+            borderRadius: '4px',
+            flex: 1,
+            padding: '8px'
           }}
         />
 
@@ -182,9 +183,9 @@ const UserList = () => {
           value={joinedFilter}
           onChange={(e) => setJoinedFilter(e.target.value)}
           style={{
-            padding: '8px',
+            border: '1px solid #ddd',
             borderRadius: '4px',
-            border: '1px solid #ddd'
+            padding: '8px'
           }}
         >
           <option value="">All Users</option>
@@ -197,9 +198,9 @@ const UserList = () => {
           value={sortField}
           onChange={(e) => setSortField(e.target.value)}
           style={{
-            padding: '8px',
+            border: '1px solid #ddd',
             borderRadius: '4px',
-            border: '1px solid #ddd'
+            padding: '8px'
           }}
         >
           <option value="name">Sort by Name</option>
@@ -210,11 +211,11 @@ const UserList = () => {
         <button
           onClick={() => setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
           style={{
-            padding: '8px',
-            borderRadius: '4px',
-            border: '1px solid #ddd',
             backgroundColor: 'white',
-            cursor: 'pointer'
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            padding: '8px'
           }}
         >
           {sortDirection === 'asc' ? '↑' : '↓'}
@@ -224,11 +225,11 @@ const UserList = () => {
       {error && (
         <div
           style={{
-            color: 'red',
-            padding: '10px',
             backgroundColor: '#ffebee',
+            borderRadius: '4px',
+            color: 'red',
             marginBottom: '20px',
-            borderRadius: '4px'
+            padding: '10px'
           }}
         >
           {error}
@@ -245,27 +246,27 @@ const UserList = () => {
           <div
             key={user.id}
             style={{
+              alignItems: 'center',
+              backgroundColor: 'white',
               border: '1px solid #ddd',
               borderRadius: '8px',
-              padding: '15px',
-              backgroundColor: 'white',
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'center'
+              padding: '15px'
             }}
           >
             <div>
               <h3 style={{ margin: '0 0 5px 0' }}>
                 {user.firstname} {user.lastname}
               </h3>
-              <p style={{ margin: '0', color: '#666' }}>@{user.username}</p>
+              <p style={{ color: '#666', margin: '0' }}>@{user.username}</p>
             </div>
             <div
               style={{
                 backgroundColor: '#e3f2fd',
-                padding: '5px 10px',
                 borderRadius: '4px',
-                fontSize: '0.9em'
+                fontSize: '0.9em',
+                padding: '5px 10px'
               }}
             >
               Joined: {new Date(user.created_at).toLocaleDateString()}
@@ -275,7 +276,7 @@ const UserList = () => {
       </div>
 
       {filteredUsers.length === 0 && (
-        <p style={{ textAlign: 'center', color: '#666' }}>No users found matching your criteria</p>
+        <p style={{ color: '#666', textAlign: 'center' }}>No users found matching your criteria</p>
       )}
     </div>
   );

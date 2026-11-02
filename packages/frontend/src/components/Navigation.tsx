@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+
 import { logout } from '../services/api';
 
 const Navigation = ({ onLogout }) => {
@@ -23,12 +24,12 @@ const Navigation = ({ onLogout }) => {
   return (
     <nav
       style={{
+        alignItems: 'center',
         backgroundColor: '#333',
-        padding: '10px',
-        marginBottom: '20px',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        marginBottom: '20px',
+        padding: '10px'
       }}
     >
       <div>
@@ -36,8 +37,8 @@ const Navigation = ({ onLogout }) => {
           to="/users"
           style={{
             color: 'white',
-            textDecoration: 'none',
-            marginRight: '20px'
+            marginRight: '20px',
+            textDecoration: 'none'
           }}
         >
           Users
@@ -54,8 +55,8 @@ const Navigation = ({ onLogout }) => {
       </div>
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center'
+          alignItems: 'center',
+          display: 'flex'
         }}
       >
         <span
@@ -70,11 +71,11 @@ const Navigation = ({ onLogout }) => {
           onClick={handleLogout}
           style={{
             backgroundColor: '#f44336',
-            color: 'white',
             border: 'none',
-            padding: '8px 16px',
+            borderRadius: '4px',
+            color: 'white',
             cursor: 'pointer',
-            borderRadius: '4px'
+            padding: '8px 16px'
           }}
         >
           Logout

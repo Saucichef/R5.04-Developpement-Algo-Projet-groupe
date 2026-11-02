@@ -9,13 +9,37 @@
     "start": "npm run build --workspace=backend && concurrently \"npm run start --workspace=backend\" \"npm run start --workspace=frontend\"",
     "dev": "concurrently \"npm run dev --workspace=backend\" \"npm run start --workspace=frontend\"",
     "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "prepare": "husky",
     "test": "npm run test --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present"
+    "test:coverage": "npm run test:coverage --workspaces --if-present"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@typescript-eslint/parser": "^8.72.1",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "concurrently": "^8.2.2",
+    "eslint": "^10.12.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.9",
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.10"
+  },
+  "lint-staged": {
+    "packages/frontend/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write",
+      "npm run test --workspace=frontend -- --findRelatedTests"
+    ],
+    "packages/backend/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write",
+      "npm run test --workspace=backend -- --findRelatedTests"
+    ],
+    "**/*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }
